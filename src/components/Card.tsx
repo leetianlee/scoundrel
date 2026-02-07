@@ -173,9 +173,12 @@ export function Card({
         <div className="card__monster-name">{cardName}</div>
       )}
 
-      <div className="card__type-badge">
-        {typeIcon}
-      </div>
+      {/* Type badge - only show when no image (border color indicates type) */}
+      {!hasImage && (
+        <div className="card__type-badge">
+          {typeIcon}
+        </div>
+      )}
 
       <div className="card__action">
         {getActionLabel()}
