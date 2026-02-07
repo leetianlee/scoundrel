@@ -324,13 +324,7 @@ export function GameBoard() {
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
           isDailyChallenge={state.isDailyChallenge}
           dailySeed={state.dailySeed}
-          dailyStreak={
-            // Ensure streak is at least 1 when daily challenge game just ended
-            // (effect that calls markCompleted may not have updated state yet)
-            state.isDailyChallenge
-              ? Math.max(dailyChallenge.streak, 1)
-              : dailyChallenge.streak
-          }
+          dailyStreak={dailyChallenge.streak}
           onSubmitDailyScore={async (nickname) => {
             if (!state.dailySeed) return false;
             return dailyLeaderboard.submitDailyScore(

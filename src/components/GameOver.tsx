@@ -4,6 +4,22 @@ import { shareScore } from '../utils/shareUtils';
 import { Leaderboard } from './Leaderboard';
 import './GameOver.css';
 
+const DAILY_STREAK_KEY = 'scoundrel_daily_streak';
+
+/**
+ * Read daily streak directly from localStorage.
+ * This is the source of truth — it's written synchronously by markCompleted()
+ * before any React state batching happens, so it's always up-to-date.
+ */
+function readStreakFromStorage(): number {
+  try {
+    const val = parseInt(localStorage.getItem(DAILY_STREAK_KEY) || '0', 10);
+    return isNaN(val) ? 0 : val;
+  } catch {
+    return 0;
+  }
+}
+
 interface GameOverProps {
   gameState: GameState;
   onRestart: () => void;
@@ -42,6 +58,25 @@ export function GameOver({
   const isWin = gameStatus === 'won';
   const isNewHighScore = score >= highScore && score > 0;
   const canSubmit = isWin && score > 0;
+
+  // Streak display: use the max of the prop value and localStorage.
+  // localStorage is written synchronously by markCompleted() and is always
+  // up-to-date. The prop may lag by one render cycle due to effect timing.
+  // We also re-read localStorage after a short delay to catch any writes
+  // that happen in effects after this component mounts.
+  const [storageStreak, setStorageStreak] = useState(readStreakFromStorage);
+  useEffect(() => {
+    if (!isDailyChallenge) return;
+    // Re-read after effects have had a chance to fire
+    const timer = setTimeout(() => {
+      setStorageStreak(readStreakFromStorage());
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [isDailyChallenge, dailyStreak]);
+
+  const effectiveStreak = isDailyChallenge
+    ? Math.max(dailyStreak ?? 0, storageStreak)
+    : 0;
 
   // Resolve effective submission state based on mode
   const effectiveSubmitting = isDailyChallenge ? (dailySubmitting || false) : submitting;
@@ -134,12 +169,12 @@ export function GameOver({
         </div>
 
         {/* Daily challenge streak info */}
-        {isDailyChallenge && dailyStreak !== undefined && dailyStreak > 0 && (
+        {isDailyChallenge && effectiveStreak > 0 && (
           <div className="game-over__streak">
             <span className="game-over__streak-fire">🔥</span>
-            <span className="game-over__streak-count">{dailyStreak} day streak!</span>
+            <span className="game-over__streak-count">{effectiveStreak} day streak!</span>
             <span className="game-over__streak-message">
-              {dailyStreak >= 7 ? 'Legendary!' : dailyStreak >= 3 ? 'Keep it going!' : 'Come back tomorrow!'}
+              {effectiveStreak >= 7 ? 'Legendary!' : effectiveStreak >= 3 ? 'Keep it going!' : 'Come back tomorrow!'}
             </span>
           </div>
         )}
