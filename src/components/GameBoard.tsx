@@ -26,9 +26,9 @@ export function GameBoard() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [boardClass, setBoardClass] = useState('');
   const prevHpRef = useRef(state.hp);
-  const prevGameStatusRef = useRef(state.gameStatus);
   const [floatingNumbers, setFloatingNumbers] = useState<{ id: number; value: number }[]>([]);
   const floatingIdRef = useRef(0);
+  const [gameEndRecorded, setGameEndRecorded] = useState(false);
 
   const canProceed = canProceedToNextRoom(state.roomCardsResolved, state.room.length);
   const canAvoid = canAvoidRoom(state.lastRoomAvoided, state.room.length);
@@ -46,20 +46,31 @@ export function GameBoard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Record game statistics and mark daily challenge completed when game ends
+  // Reset game-end tracking when a new game starts
+  const isGamePlaying = state.gameStatus === 'playing';
+  useEffect(() => {
+    if (isGamePlaying) {
+      setGameEndRecorded(false);
+    }
+  }, [isGamePlaying]);
+
+  // Record game statistics and mark daily challenge completed when game ends.
+  // Uses React state (gameEndRecorded) instead of a ref for the guard so that
+  // StrictMode's double-invoke of effects works correctly — React state updates
+  // from effects are preserved across the mount/unmount/remount cycle.
+  const markDailyCompleted = dailyChallenge.markCompleted;
   useEffect(() => {
     if (
       (state.gameStatus === 'won' || state.gameStatus === 'lost') &&
-      prevGameStatusRef.current === 'playing'
+      !gameEndRecorded
     ) {
+      setGameEndRecorded(true);
       recordGame(state.gameStatus === 'won', state.score);
-      // Mark daily challenge as completed (updates streak immediately)
       if (state.isDailyChallenge) {
-        dailyChallenge.markCompleted();
+        markDailyCompleted();
       }
     }
-    prevGameStatusRef.current = state.gameStatus;
-  }, [state.gameStatus, state.score, state.isDailyChallenge, recordGame, dailyChallenge]);
+  }, [state.gameStatus, state.score, state.isDailyChallenge, recordGame, markDailyCompleted, gameEndRecorded]);
 
   // Play sounds and animations based on HP changes
   useEffect(() => {
@@ -313,7 +324,13 @@ export function GameBoard() {
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
           isDailyChallenge={state.isDailyChallenge}
           dailySeed={state.dailySeed}
-          dailyStreak={dailyChallenge.streak}
+          dailyStreak={
+            // Ensure streak is at least 1 when daily challenge game just ended
+            // (effect that calls markCompleted may not have updated state yet)
+            state.isDailyChallenge
+              ? Math.max(dailyChallenge.streak, 1)
+              : dailyChallenge.streak
+          }
           onSubmitDailyScore={async (nickname) => {
             if (!state.dailySeed) return false;
             return dailyLeaderboard.submitDailyScore(
