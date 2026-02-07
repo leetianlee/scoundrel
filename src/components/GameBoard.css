@@ -286,7 +286,8 @@
 .game-board__stats-display {
   font-family: 'Cinzel', serif;
   font-size: 13px;
-  color: var(--color-text-dim);
+  color: var(--color-text-secondary);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
