@@ -1,6 +1,6 @@
 import { useReducer, useEffect } from 'react';
 import type { GameState, GameAction, Card } from '../types';
-import { createShuffledDeck, createShuffledDeckSeeded } from '../utils/cardUtils';
+import { createShuffledDeck } from '../utils/cardUtils';
 import {
   calculateWeaponDamage,
   calculateHealing,
@@ -32,8 +32,6 @@ function getInitialState(): GameState {
     score: 0,
     highScore: savedHighScore ? parseInt(savedHighScore, 10) : 0,
     lastAction: null,
-    isDailyChallenge: false,
-    dailySeed: null,
   };
 }
 
@@ -58,27 +56,6 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         room,
         highScore: state.highScore,
         lastAction: 'Game started! Face 3 of 4 cards in each room...',
-      };
-    }
-
-    case 'START_DAILY_CHALLENGE': {
-      const { seed } = action;
-      const deck = createShuffledDeckSeeded(seed);
-      const room = deck.slice(0, ROOM_SIZE);
-      const remainingDeck = deck.slice(ROOM_SIZE);
-
-      // Reset potion tracking
-      lastPotionValue = 0;
-      lastCardWasPotion = false;
-
-      return {
-        ...getInitialState(),
-        deck: remainingDeck,
-        room,
-        highScore: state.highScore,
-        isDailyChallenge: true,
-        dailySeed: seed,
-        lastAction: `Daily Challenge started! (${seed})`,
       };
     }
 
@@ -367,7 +344,6 @@ export function useGameState() {
   }, []);
 
   const startGame = () => dispatch({ type: 'START_GAME' });
-  const startDailyChallenge = (seed: string) => dispatch({ type: 'START_DAILY_CHALLENGE', seed });
   const drawRoom = () => dispatch({ type: 'DRAW_ROOM' });
   const fightMonster = (card: Card, useWeapon: boolean) =>
     dispatch({ type: 'FIGHT_MONSTER', card, useWeapon });
@@ -379,7 +355,6 @@ export function useGameState() {
     state,
     actions: {
       startGame,
-      startDailyChallenge,
       drawRoom,
       fightMonster,
       drinkPotion,

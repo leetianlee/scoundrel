@@ -89,64 +89,6 @@ export function createShuffledDeck(): Card[] {
 }
 
 /**
- * Mulberry32 seeded PRNG — returns a function that produces pseudo-random
- * numbers in [0, 1) deterministically from a 32-bit integer seed.
- */
-function mulberry32(seed: number): () => number {
-  let s = seed;
-  return function () {
-    let t = (s += 0x6d2b79f5);
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-/**
- * Converts a string to a 32-bit hash suitable for use as a PRNG seed.
- */
-function hashStringToSeed(str: string): number {
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash);
-}
-
-/**
- * Fisher-Yates shuffle with a seeded PRNG (deterministic).
- */
-export function shuffleDeckSeeded(deck: Card[], seed: string): Card[] {
-  const shuffled = [...deck];
-  const random = mulberry32(hashStringToSeed(seed));
-  for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
-  return shuffled;
-}
-
-/**
- * Creates a shuffled deck with a specific seed (for daily challenges).
- */
-export function createShuffledDeckSeeded(seed: string): Card[] {
-  return shuffleDeckSeeded(createDeck(), seed);
-}
-
-/**
- * Generates today's daily challenge seed (format: "YYYY-MM-DD").
- */
-export function getDailySeed(): string {
-  const today = new Date();
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
-
-/**
  * Gets the display name for a card
  */
 export function getCardName(card: Card): string {

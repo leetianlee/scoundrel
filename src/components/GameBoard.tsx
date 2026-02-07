@@ -4,8 +4,7 @@ import { useGameState } from '../hooks/useGameState';
 import { useSoundContext } from '../hooks/useSound';
 import { useLeaderboard } from '../hooks/useLeaderboard';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
-import { useDailyChallenge } from '../hooks/useDailyChallenge';
-import { useDailyLeaderboard } from '../hooks/useDailyLeaderboard';
+import { usePlayStreak } from '../hooks/usePlayStreak';
 import { useStatistics } from '../hooks/useStatistics';
 import { PlayerStatus } from './PlayerStatus';
 import { Room } from './Room';
@@ -20,8 +19,7 @@ export function GameBoard() {
   const { state, actions } = useGameState();
   const { playSound, soundEnabled, toggleSound } = useSoundContext();
   const leaderboard = useLeaderboard();
-  const dailyChallenge = useDailyChallenge();
-  const dailyLeaderboard = useDailyLeaderboard();
+  const { streak, recordPlay } = usePlayStreak();
   const { stats, recordGame } = useStatistics();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [boardClass, setBoardClass] = useState('');
@@ -54,11 +52,7 @@ export function GameBoard() {
     }
   }, [isGamePlaying]);
 
-  // Record game statistics and mark daily challenge completed when game ends.
-  // Uses React state (gameEndRecorded) instead of a ref for the guard so that
-  // StrictMode's double-invoke of effects works correctly — React state updates
-  // from effects are preserved across the mount/unmount/remount cycle.
-  const markDailyCompleted = dailyChallenge.markCompleted;
+  // Record game statistics and play streak when game ends
   useEffect(() => {
     if (
       (state.gameStatus === 'won' || state.gameStatus === 'lost') &&
@@ -66,11 +60,9 @@ export function GameBoard() {
     ) {
       setGameEndRecorded(true);
       recordGame(state.gameStatus === 'won', state.score);
-      if (state.isDailyChallenge) {
-        markDailyCompleted();
-      }
+      recordPlay();
     }
-  }, [state.gameStatus, state.score, state.isDailyChallenge, recordGame, markDailyCompleted, gameEndRecorded]);
+  }, [state.gameStatus, state.score, recordGame, recordPlay, gameEndRecorded]);
 
   // Play sounds and animations based on HP changes
   useEffect(() => {
@@ -130,15 +122,7 @@ export function GameBoard() {
   const handleNewGame = () => {
     playSound('buttonClick');
     leaderboard.resetSubmitted();
-    dailyLeaderboard.resetSubmitted();
     actions.startGame();
-  };
-
-  const handleStartDailyChallenge = () => {
-    playSound('buttonClick');
-    leaderboard.resetSubmitted();
-    dailyLeaderboard.resetSubmitted();
-    actions.startDailyChallenge(dailyChallenge.todaySeed);
   };
 
   // Keyboard shortcuts
@@ -176,18 +160,13 @@ export function GameBoard() {
           <span className="game-board__high-score">Best: {state.highScore}</span>
           <span className="game-board__stats-display">
             {stats.gamesPlayed > 0 && `${stats.gamesWon}W / ${stats.gamesPlayed}G`}
+            {streak > 0 && ` · 🔥${streak}`}
           </span>
           <button
             className="game-board__help-btn"
             onClick={handleNewGame}
           >
             New Game
-          </button>
-          <button
-            className="game-board__help-btn game-board__help-btn--daily"
-            onClick={handleStartDailyChallenge}
-          >
-            {dailyChallenge.streak > 0 ? `🔥${dailyChallenge.streak} Daily` : 'Daily'}
           </button>
           <button
             className="game-board__help-btn"
@@ -208,15 +187,6 @@ export function GameBoard() {
       <PlayerStatus gameState={state} />
 
       <main className="game-board__main">
-        {state.isDailyChallenge && (
-          <div className="game-board__daily-badge">
-            ⭐ Daily Challenge: {state.dailySeed}
-            {dailyChallenge.streak > 0 && (
-              <span className="game-board__streak-badge">🔥 {dailyChallenge.streak} day streak</span>
-            )}
-          </div>
-        )}
-
         <div className="game-board__room-header game-board__room-header--compact">
           <span className="game-board__room-label">Dungeon Room</span>
           <div className="game-board__room-status">
@@ -322,29 +292,7 @@ export function GameBoard() {
           submitted={leaderboard.submitted}
           submittedId={leaderboard.submittedId}
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
-          isDailyChallenge={state.isDailyChallenge}
-          dailySeed={state.dailySeed}
-          dailyStreak={dailyChallenge.streak}
-          onSubmitDailyScore={async (nickname) => {
-            if (!state.dailySeed) return false;
-            return dailyLeaderboard.submitDailyScore(
-              nickname,
-              state.score,
-              state.hp,
-              state.dailySeed
-            );
-          }}
-          dailyLeaderboardEntries={dailyLeaderboard.entries}
-          dailyLeaderboardLoading={dailyLeaderboard.loading}
-          dailyLeaderboardError={dailyLeaderboard.error}
-          dailySubmitting={dailyLeaderboard.submitting}
-          dailySubmitted={dailyLeaderboard.submitted}
-          dailySubmittedId={dailyLeaderboard.submittedId}
-          onRefreshDailyLeaderboard={() => {
-            if (state.dailySeed) {
-              dailyLeaderboard.fetchDailyLeaderboard(state.dailySeed);
-            }
-          }}
+          streak={streak}
         />
       )}
 

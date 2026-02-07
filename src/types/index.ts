@@ -29,14 +29,11 @@ export interface GameState {
   score: number;
   highScore: number;
   lastAction: string | null;
-  isDailyChallenge: boolean;
-  dailySeed: string | null;
 }
 
 // Actions
 export type GameAction =
   | { type: 'START_GAME' }
-  | { type: 'START_DAILY_CHALLENGE'; seed: string }
   | { type: 'DRAW_ROOM' }
   | { type: 'FIGHT_MONSTER'; card: Card; useWeapon: boolean }
   | { type: 'DRINK_POTION'; card: Card }
@@ -51,10 +48,6 @@ export interface LeaderboardEntry {
   score: number;
   hp_remaining: number;
   created_at: string;
-}
-
-export interface DailyLeaderboardEntry extends LeaderboardEntry {
-  challenge_date: string;
 }
 
 // Statistics
