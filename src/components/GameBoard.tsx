@@ -46,16 +46,20 @@ export function GameBoard() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Record game statistics when game ends
+  // Record game statistics and mark daily challenge completed when game ends
   useEffect(() => {
     if (
       (state.gameStatus === 'won' || state.gameStatus === 'lost') &&
       prevGameStatusRef.current === 'playing'
     ) {
       recordGame(state.gameStatus === 'won', state.score);
+      // Mark daily challenge as completed (updates streak immediately)
+      if (state.isDailyChallenge) {
+        dailyChallenge.markCompleted();
+      }
     }
     prevGameStatusRef.current = state.gameStatus;
-  }, [state.gameStatus, state.score, recordGame]);
+  }, [state.gameStatus, state.score, state.isDailyChallenge, recordGame, dailyChallenge]);
 
   // Play sounds and animations based on HP changes
   useEffect(() => {
@@ -312,14 +316,12 @@ export function GameBoard() {
           dailyStreak={dailyChallenge.streak}
           onSubmitDailyScore={async (nickname) => {
             if (!state.dailySeed) return false;
-            const success = await dailyLeaderboard.submitDailyScore(
+            return dailyLeaderboard.submitDailyScore(
               nickname,
               state.score,
               state.hp,
               state.dailySeed
             );
-            if (success) dailyChallenge.markCompleted();
-            return success;
           }}
           dailyLeaderboardEntries={dailyLeaderboard.entries}
           dailyLeaderboardLoading={dailyLeaderboard.loading}

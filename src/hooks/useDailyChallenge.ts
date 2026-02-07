@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import { getDailySeed } from '../utils/cardUtils';
 
 const DAILY_COMPLETION_KEY = 'scoundrel_daily_completed';
@@ -47,7 +47,8 @@ function getStreakData(): StreakData {
  * - If last completed yesterday: streak is current value (will continue if they play today)
  * - If last completed before yesterday: streak resets to 0
  */
-function getEffectiveStreak(streakData: StreakData, todaySeed: string): number {
+function getEffectiveStreak(todaySeed: string): number {
+  const streakData = getStreakData();
   const { currentStreak, lastCompletedDate } = streakData;
   if (!lastCompletedDate || currentStreak === 0) return 0;
 
@@ -65,22 +66,26 @@ function getEffectiveStreak(streakData: StreakData, todaySeed: string): number {
   }
 }
 
+/**
+ * Check if today's daily challenge has been completed
+ */
+function checkCompletedToday(todaySeed: string): boolean {
+  const stored = localStorage.getItem(DAILY_COMPLETION_KEY);
+  return stored === todaySeed;
+}
+
 export function useDailyChallenge(): UseDailyChallengeReturn {
   const todaySeed = getDailySeed();
 
-  // Derive completion status directly from localStorage (no effect needed)
-  const hasCompletedToday = useMemo(() => {
-    const stored = localStorage.getItem(DAILY_COMPLETION_KEY);
-    return stored === todaySeed;
-  }, [todaySeed]);
+  // Use useState initializers to read from localStorage (React 19 safe pattern)
+  const [hasCompletedToday, setHasCompletedToday] = useState(
+    () => checkCompletedToday(todaySeed)
+  );
+  const [streak, setStreak] = useState(
+    () => getEffectiveStreak(todaySeed)
+  );
 
-  // Derive streak from localStorage
-  const streak = useMemo(() => {
-    const streakData = getStreakData();
-    return getEffectiveStreak(streakData, todaySeed);
-  }, [todaySeed]);
-
-  const markCompleted = () => {
+  const markCompleted = useCallback(() => {
     // Mark today as completed
     localStorage.setItem(DAILY_COMPLETION_KEY, todaySeed);
 
@@ -105,7 +110,11 @@ export function useDailyChallenge(): UseDailyChallengeReturn {
 
     localStorage.setItem(DAILY_STREAK_KEY, String(newStreak));
     localStorage.setItem(DAILY_LAST_COMPLETED_KEY, todaySeed);
-  };
+
+    // Update React state so UI re-renders
+    setHasCompletedToday(true);
+    setStreak(newStreak);
+  }, [todaySeed]);
 
   return {
     todaySeed,
