@@ -7,6 +7,7 @@ interface LeaderboardProps {
   error: string | null;
   highlightId: string | null;
   onRefresh: () => void;
+  title?: string;
 }
 
 function formatTimeAgo(dateStr: string): string {
@@ -28,11 +29,11 @@ function getRankLabel(index: number): string {
   return `${index + 1}`;
 }
 
-export function Leaderboard({ entries, loading, error, highlightId, onRefresh }: LeaderboardProps) {
+export function Leaderboard({ entries, loading, error, highlightId, onRefresh, title }: LeaderboardProps) {
   return (
     <div className="leaderboard">
       <div className="leaderboard__header">
-        <h3 className="leaderboard__title">Global Leaderboard</h3>
+        <h3 className="leaderboard__title">{title || 'Global Leaderboard'}</h3>
         <button className="leaderboard__refresh" onClick={onRefresh} disabled={loading}>
           {loading ? '...' : 'Refresh'}
         </button>

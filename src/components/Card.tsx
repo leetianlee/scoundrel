@@ -21,6 +21,7 @@ interface CardProps {
   onEquip: (card: CardType) => void;
   disabled?: boolean;
   isNew?: boolean;
+  keyboardIndex?: number;
 }
 
 // Get the image path for a card
@@ -37,7 +38,8 @@ export function Card({
   onDrink,
   onEquip,
   disabled,
-  isNew = false
+  isNew = false,
+  keyboardIndex,
 }: CardProps) {
   const [animationClass, setAnimationClass] = useState(isNew ? 'card--entering' : '');
   const [hasImage, setHasImage] = useState(false);
@@ -76,6 +78,12 @@ export function Card({
 
   // Check if weapon can be used against this monster
   const weaponUsable = gameState.weapon && canUseWeapon(card.value, gameState.lastMonsterSlain);
+
+  // Check if weapon is blocked (too weak for this monster due to degradation)
+  const weaponBlocked = card.type === 'monster'
+    && gameState.weapon !== null
+    && gameState.lastMonsterSlain !== null
+    && !weaponUsable;
 
   // Delay action dispatch so exit animation can play
   const triggerWithExitAnimation = (action: () => void) => {
@@ -149,12 +157,19 @@ export function Card({
 
   return (
     <div
-      className={`card card--${typeClass} ${hasImage ? 'card--has-image' : ''} ${animationClass} ${disabled ? 'card--disabled' : ''}`}
+      className={`card card--${typeClass} ${hasImage ? 'card--has-image' : ''} ${animationClass} ${disabled ? 'card--disabled' : ''} ${weaponBlocked ? 'card--weapon-blocked' : ''}`}
       onClick={handlePrimaryClick}
       style={cardStyle}
     >
       {/* Dark overlay for readability when image is present */}
       {hasImage && <div className="card__image-overlay" />}
+
+      {/* Keyboard shortcut badge */}
+      {keyboardIndex && !disabled && (
+        <div className="card__keyboard-badge">
+          {keyboardIndex}
+        </div>
+      )}
 
       <div className="card__corner card__corner--top">
         <span className="card__rank">{card.rank}</span>
@@ -177,6 +192,14 @@ export function Card({
       {!hasImage && (
         <div className="card__type-badge">
           {typeIcon}
+        </div>
+      )}
+
+      {/* Weapon blocked indicator */}
+      {weaponBlocked && (
+        <div className="card__weapon-blocked">
+          <span className="card__blocked-icon">🚫</span>
+          <span className="card__blocked-text">Weapon blocked</span>
         </div>
       )}
 

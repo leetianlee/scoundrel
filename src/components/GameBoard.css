@@ -281,6 +281,52 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+/* Keyboard shortcuts hint */
+.game-board__keyboard-hint {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: 8px;
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.5px;
+}
+
+/* Hide keyboard hint on touchscreens */
+@media (hover: none) and (pointer: coarse) {
+  .game-board__keyboard-hint {
+    display: none;
+  }
+}
+
+/* Daily challenge button */
+.game-board__help-btn--daily {
+  background: linear-gradient(135deg, #ffd700 0%, #ff8c00 100%);
+  color: #1a1a2e;
+  font-weight: 700;
+  border: 2px solid rgba(255, 215, 0, 0.5);
+}
+
+.game-board__help-btn--daily:hover {
+  background: linear-gradient(135deg, #ffed4e 0%, #ffaa33 100%);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+/* Daily challenge badge */
+.game-board__daily-badge {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 140, 0, 0.15));
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  border-radius: 6px;
+  padding: 6px 14px;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffd700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  max-width: fit-content;
+  margin: 0 auto 4px;
+}
+
 .game-board__deck-count,
 .game-board__high-score,
 .game-board__stats-display {

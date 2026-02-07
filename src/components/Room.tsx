@@ -34,7 +34,7 @@ export function Room({
   return (
     <div className="room">
       <div className="room__cards">
-        {cards.map((card) => (
+        {cards.map((card, index) => (
           <Card
             key={card.id}
             card={card}
@@ -44,6 +44,7 @@ export function Room({
             onDrink={onDrink}
             onEquip={onEquip}
             disabled={isLastCardLocked}
+            keyboardIndex={index + 1}
           />
         ))}
       </div>

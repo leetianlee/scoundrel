@@ -15,33 +15,52 @@ interface GameOverProps {
   submitted: boolean;
   submittedId: string | null;
   onRefreshLeaderboard: () => void;
+  // Daily challenge props
+  isDailyChallenge?: boolean;
+  dailySeed?: string | null;
+  onSubmitDailyScore?: (nickname: string) => Promise<boolean>;
+  dailyLeaderboardEntries?: LeaderboardEntry[];
+  dailyLeaderboardLoading?: boolean;
+  dailyLeaderboardError?: string | null;
+  dailySubmitting?: boolean;
+  dailySubmitted?: boolean;
+  dailySubmittedId?: string | null;
+  onRefreshDailyLeaderboard?: () => void;
 }
 
 export function GameOver({
   gameState, onRestart,
   onSubmitScore, leaderboardEntries, leaderboardLoading, leaderboardError,
   submitting, submitted, submittedId, onRefreshLeaderboard,
+  isDailyChallenge, dailySeed,
+  onSubmitDailyScore, dailyLeaderboardEntries, dailyLeaderboardLoading,
+  dailyLeaderboardError, dailySubmitting, dailySubmitted, dailySubmittedId,
+  onRefreshDailyLeaderboard,
 }: GameOverProps) {
   const { gameStatus, score, highScore, hp } = gameState;
   const isWin = gameStatus === 'won';
   const isNewHighScore = score >= highScore && score > 0;
   const canSubmit = isWin && score > 0;
 
+  // Resolve effective submission state based on mode
+  const effectiveSubmitting = isDailyChallenge ? (dailySubmitting || false) : submitting;
+  const effectiveSubmitted = isDailyChallenge ? (dailySubmitted || false) : submitted;
+
   const [nickname, setNickname] = useState(() => {
     return localStorage.getItem('scoundrel_nickname') || '';
   });
-  const [showLeaderboard, setShowLeaderboard] = useState(submitted);
+  const [showLeaderboard, setShowLeaderboard] = useState(effectiveSubmitted);
   const [shareStatus, setShareStatus] = useState<string | null>(null);
   const leaderboardRef = useRef<HTMLDivElement>(null);
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   // Auto-show leaderboard after score submission
   useEffect(() => {
-    if (submitted && !showLeaderboard) {
+    if (effectiveSubmitted && !showLeaderboard) {
       setShowLeaderboard(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [submitted]);
+  }, [effectiveSubmitted]);
 
   // Auto-scroll to leaderboard when it becomes visible
   useEffect(() => {
@@ -53,8 +72,12 @@ export function GameOver({
   }, [showLeaderboard]);
 
   const handleSubmit = async () => {
-    if (!nickname.trim() || submitting || submitted) return;
-    await onSubmitScore(nickname.trim());
+    if (!nickname.trim() || effectiveSubmitting || effectiveSubmitted) return;
+    if (isDailyChallenge && onSubmitDailyScore) {
+      await onSubmitDailyScore(nickname.trim());
+    } else {
+      await onSubmitScore(nickname.trim());
+    }
   };
 
   const handleShare = async () => {
@@ -117,7 +140,7 @@ export function GameOver({
         )}
 
         {/* Score submission — only for wins */}
-        {canSubmit && !submitted && (
+        {canSubmit && !effectiveSubmitted && (
           <div className="game-over__submit">
             <input
               className="game-over__nickname-input"
@@ -127,21 +150,21 @@ export function GameOver({
               onChange={e => setNickname(e.target.value)}
               onKeyDown={handleKeyDown}
               maxLength={20}
-              disabled={submitting}
+              disabled={effectiveSubmitting}
             />
             <button
               className="game-over__submit-btn"
               onClick={handleSubmit}
-              disabled={!nickname.trim() || submitting}
+              disabled={!nickname.trim() || effectiveSubmitting}
             >
-              {submitting ? 'Submitting...' : 'Submit Score'}
+              {effectiveSubmitting ? 'Submitting...' : (isDailyChallenge ? 'Submit Daily Score' : 'Submit Score')}
             </button>
           </div>
         )}
 
-        {submitted && (
+        {effectiveSubmitted && (
           <div className="game-over__submitted">
-            Score submitted!
+            {isDailyChallenge ? 'Daily score submitted!' : 'Score submitted!'}
           </div>
         )}
 
@@ -158,7 +181,13 @@ export function GameOver({
             onClick={() => {
               const next = !showLeaderboard;
               setShowLeaderboard(next);
-              if (next) onRefreshLeaderboard();
+              if (next) {
+                if (isDailyChallenge && onRefreshDailyLeaderboard) {
+                  onRefreshDailyLeaderboard();
+                } else {
+                  onRefreshLeaderboard();
+                }
+              }
             }}
           >
             {showLeaderboard ? 'Hide Leaderboard' : 'Leaderboard'}
@@ -169,11 +198,12 @@ export function GameOver({
         {showLeaderboard && (
           <div ref={leaderboardRef}>
             <Leaderboard
-              entries={leaderboardEntries}
-              loading={leaderboardLoading}
-              error={leaderboardError}
-              highlightId={submittedId}
-              onRefresh={onRefreshLeaderboard}
+              entries={isDailyChallenge ? (dailyLeaderboardEntries || []) : leaderboardEntries}
+              loading={isDailyChallenge ? (dailyLeaderboardLoading || false) : leaderboardLoading}
+              error={isDailyChallenge ? (dailyLeaderboardError || null) : leaderboardError}
+              highlightId={isDailyChallenge ? (dailySubmittedId || null) : submittedId}
+              onRefresh={isDailyChallenge ? (onRefreshDailyLeaderboard || (() => {})) : onRefreshLeaderboard}
+              title={isDailyChallenge ? `Daily Challenge: ${dailySeed}` : undefined}
             />
           </div>
         )}

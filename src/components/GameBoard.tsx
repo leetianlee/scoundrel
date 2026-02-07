@@ -3,6 +3,9 @@ import type { Card } from '../types';
 import { useGameState } from '../hooks/useGameState';
 import { useSoundContext } from '../hooks/useSound';
 import { useLeaderboard } from '../hooks/useLeaderboard';
+import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
+import { useDailyChallenge } from '../hooks/useDailyChallenge';
+import { useDailyLeaderboard } from '../hooks/useDailyLeaderboard';
 import { useStatistics } from '../hooks/useStatistics';
 import { PlayerStatus } from './PlayerStatus';
 import { Room } from './Room';
@@ -17,6 +20,8 @@ export function GameBoard() {
   const { state, actions } = useGameState();
   const { playSound, soundEnabled, toggleSound } = useSoundContext();
   const leaderboard = useLeaderboard();
+  const dailyChallenge = useDailyChallenge();
+  const dailyLeaderboard = useDailyLeaderboard();
   const { stats, recordGame } = useStatistics();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [boardClass, setBoardClass] = useState('');
@@ -110,8 +115,29 @@ export function GameBoard() {
   const handleNewGame = () => {
     playSound('buttonClick');
     leaderboard.resetSubmitted();
+    dailyLeaderboard.resetSubmitted();
     actions.startGame();
   };
+
+  const handleStartDailyChallenge = () => {
+    playSound('buttonClick');
+    leaderboard.resetSubmitted();
+    dailyLeaderboard.resetSubmitted();
+    actions.startDailyChallenge(dailyChallenge.todaySeed);
+  };
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    roomCards: state.room,
+    gameState: state,
+    onFightWithWeapon: handleFightWithWeapon,
+    onFightBarehanded: handleFightBarehanded,
+    onDrink: actions.drinkPotion,
+    onEquip: handleEquipWeapon,
+    onDrawRoom: handleDrawRoom,
+    onAvoidRoom: handleAvoidRoom,
+    onNewGame: handleNewGame,
+  });
 
   return (
     <div className={`game-board ${boardClass}`}>
@@ -143,6 +169,12 @@ export function GameBoard() {
             New Game
           </button>
           <button
+            className="game-board__help-btn game-board__help-btn--daily"
+            onClick={handleStartDailyChallenge}
+          >
+            Daily
+          </button>
+          <button
             className="game-board__help-btn"
             onClick={toggleSound}
             title={soundEnabled ? 'Mute sounds' : 'Enable sounds'}
@@ -161,6 +193,12 @@ export function GameBoard() {
       <PlayerStatus gameState={state} />
 
       <main className="game-board__main">
+        {state.isDailyChallenge && (
+          <div className="game-board__daily-badge">
+            ⭐ Daily Challenge: {state.dailySeed}
+          </div>
+        )}
+
         <div className="game-board__room-header game-board__room-header--compact">
           <span className="game-board__room-label">Dungeon Room</span>
           <div className="game-board__room-status">
@@ -245,6 +283,10 @@ export function GameBoard() {
             </p>
           )}
 
+          {/* Keyboard shortcuts hint - desktop only */}
+          <div className="game-board__keyboard-hint">
+            Keys: 1-4 cards · A avoid · Enter continue · N new game
+          </div>
         </div>
       </main>
 
@@ -262,6 +304,30 @@ export function GameBoard() {
           submitted={leaderboard.submitted}
           submittedId={leaderboard.submittedId}
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
+          isDailyChallenge={state.isDailyChallenge}
+          dailySeed={state.dailySeed}
+          onSubmitDailyScore={async (nickname) => {
+            if (!state.dailySeed) return false;
+            const success = await dailyLeaderboard.submitDailyScore(
+              nickname,
+              state.score,
+              state.hp,
+              state.dailySeed
+            );
+            if (success) dailyChallenge.markCompleted();
+            return success;
+          }}
+          dailyLeaderboardEntries={dailyLeaderboard.entries}
+          dailyLeaderboardLoading={dailyLeaderboard.loading}
+          dailyLeaderboardError={dailyLeaderboard.error}
+          dailySubmitting={dailyLeaderboard.submitting}
+          dailySubmitted={dailyLeaderboard.submitted}
+          dailySubmittedId={dailyLeaderboard.submittedId}
+          onRefreshDailyLeaderboard={() => {
+            if (state.dailySeed) {
+              dailyLeaderboard.fetchDailyLeaderboard(state.dailySeed);
+            }
+          }}
         />
       )}
 
