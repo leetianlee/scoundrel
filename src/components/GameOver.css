@@ -266,6 +266,19 @@
   transform: translateY(0) scale(0.98);
 }
 
+/* Loss hint */
+.game-over__loss-hint {
+  color: var(--color-text-dim);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-style: italic;
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
 /* Score submission form */
 .game-over__submit {
   display: flex;
@@ -358,6 +371,11 @@
   transition: all var(--transition-fast) ease;
   text-transform: uppercase;
   letter-spacing: 1px;
+}
+
+.game-over__share-btn {
+  min-width: 120px;
+  text-align: center;
 }
 
 .game-over__share-btn:hover,

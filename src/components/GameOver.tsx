@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { GameState, LeaderboardEntry } from '../types';
 import { shareScore } from '../utils/shareUtils';
 import { Leaderboard } from './Leaderboard';
@@ -32,6 +32,25 @@ export function GameOver({
   });
   const [showLeaderboard, setShowLeaderboard] = useState(submitted);
   const [shareStatus, setShareStatus] = useState<string | null>(null);
+  const leaderboardRef = useRef<HTMLDivElement>(null);
+  const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
+
+  // Auto-show leaderboard after score submission
+  useEffect(() => {
+    if (submitted && !showLeaderboard) {
+      setShowLeaderboard(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [submitted]);
+
+  // Auto-scroll to leaderboard when it becomes visible
+  useEffect(() => {
+    if (showLeaderboard && leaderboardRef.current) {
+      requestAnimationFrame(() => {
+        leaderboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+    }
+  }, [showLeaderboard]);
 
   const handleSubmit = async () => {
     if (!nickname.trim() || submitting || submitted) return;
@@ -41,10 +60,10 @@ export function GameOver({
   const handleShare = async () => {
     const result = await shareScore(score, isWin);
     if (result === 'copied') {
-      setShareStatus('Copied!');
-      setTimeout(() => setShareStatus(null), 2000);
+      setShareStatus('Copied to clipboard!');
+      setTimeout(() => setShareStatus(null), 2500);
     } else if (result === 'failed') {
-      setShareStatus('Failed');
+      setShareStatus('Copy failed');
       setTimeout(() => setShareStatus(null), 2000);
     }
   };
@@ -90,6 +109,13 @@ export function GameOver({
           </div>
         </div>
 
+        {/* Message for losses explaining no submission */}
+        {!isWin && (
+          <div className="game-over__loss-hint">
+            Only victories qualify for the leaderboard. Try again!
+          </div>
+        )}
+
         {/* Score submission — only for wins */}
         {canSubmit && !submitted && (
           <div className="game-over__submit">
@@ -125,30 +151,31 @@ export function GameOver({
             Play Again
           </button>
           <button className="game-over__share-btn" onClick={handleShare}>
-            {shareStatus || 'Share'}
+            {shareStatus || (hasNativeShare ? 'Share' : 'Copy Score')}
           </button>
-          {!showLeaderboard && (
-            <button
-              className="game-over__leaderboard-btn"
-              onClick={() => {
-                setShowLeaderboard(true);
-                onRefreshLeaderboard();
-              }}
-            >
-              Leaderboard
-            </button>
-          )}
+          <button
+            className="game-over__leaderboard-btn"
+            onClick={() => {
+              const next = !showLeaderboard;
+              setShowLeaderboard(next);
+              if (next) onRefreshLeaderboard();
+            }}
+          >
+            {showLeaderboard ? 'Hide Leaderboard' : 'Leaderboard'}
+          </button>
         </div>
 
         {/* Leaderboard */}
         {showLeaderboard && (
-          <Leaderboard
-            entries={leaderboardEntries}
-            loading={leaderboardLoading}
-            error={leaderboardError}
-            highlightId={submittedId}
-            onRefresh={onRefreshLeaderboard}
-          />
+          <div ref={leaderboardRef}>
+            <Leaderboard
+              entries={leaderboardEntries}
+              loading={leaderboardLoading}
+              error={leaderboardError}
+              highlightId={submittedId}
+              onRefresh={onRefreshLeaderboard}
+            />
+          </div>
         )}
       </div>
     </div>
