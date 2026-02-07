@@ -1,0 +1,129 @@
+.room {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2)),
+    radial-gradient(ellipse at center, rgba(255, 107, 53, 0.05) 0%, transparent 70%);
+  border-radius: 16px;
+  padding: 28px;
+  min-height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-stone-light);
+  box-shadow:
+    0 8px 24px rgba(0, 0, 0, 0.4),
+    inset 0 0 60px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Stone floor pattern */
+.room::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Corner torches effect */
+.room::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255, 107, 53, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 90% 10%, rgba(255, 107, 53, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 10% 90%, rgba(255, 107, 53, 0.06) 0%, transparent 25%),
+    radial-gradient(circle at 90% 90%, rgba(255, 107, 53, 0.06) 0%, transparent 25%);
+  pointer-events: none;
+  animation: torchFlicker 3s ease-in-out infinite;
+}
+
+.room--empty {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.15)),
+    radial-gradient(ellipse at center, rgba(155, 89, 182, 0.05) 0%, transparent 70%);
+  border: 2px dashed var(--color-stone-light);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 0 40px rgba(0, 0, 0, 0.2);
+}
+
+.room--empty p {
+  color: var(--color-text-secondary);
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  font-style: italic;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.room__cards {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+/* Card stagger animation on room enter */
+.room__cards > * {
+  animation: cardEntrance 0.5s ease-out backwards;
+}
+
+.room__cards > *:nth-child(1) { animation-delay: 0.05s; }
+.room__cards > *:nth-child(2) { animation-delay: 0.15s; }
+.room__cards > *:nth-child(3) { animation-delay: 0.25s; }
+.room__cards > *:nth-child(4) { animation-delay: 0.35s; }
+
+.room__locked-hint {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-torch-glow);
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: 0.5px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 16px;
+  border-radius: 20px;
+  z-index: 2;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .room {
+    padding: 18px;
+    min-height: 180px;
+    border-radius: 12px;
+  }
+
+  .room__cards {
+    gap: 10px;
+  }
+
+  .room--empty p {
+    font-size: 14px;
+  }
+}
+
+/* Very small screens - 2x2 grid */
+@media (max-width: 400px) {
+  .room__cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+}

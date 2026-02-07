@@ -1,0 +1,273 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  /* Dark Dungeon Color Palette */
+  --color-bg-primary: #0d0d14;
+  --color-bg-secondary: #1a1a2e;
+  --color-bg-tertiary: #16213e;
+
+  --color-stone: #2d2d3a;
+  --color-stone-light: #3d3d4a;
+
+  --color-torch-orange: #ff6b35;
+  --color-torch-glow: #ff9f1c;
+  --color-blood-red: #c41e3a;
+  --color-poison-green: #27ae60;
+  --color-gold: #ffd700;
+  --color-pale-blue: #4ecdc4;
+  --color-purple-magic: #9b59b6;
+
+  --color-text-primary: rgba(255, 255, 255, 0.95);
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-dim: rgba(255, 255, 255, 0.5);
+
+  /* Monster Colors */
+  --color-monster-bg: linear-gradient(145deg, #2d1f1f, #1a1212);
+  --color-monster-border: #8b0000;
+  --color-monster-glow: rgba(139, 0, 0, 0.5);
+
+  /* Potion Colors */
+  --color-potion-bg: linear-gradient(145deg, #1f2d1f, #121a12);
+  --color-potion-border: #228b22;
+  --color-potion-glow: rgba(34, 139, 34, 0.5);
+
+  /* Weapon Colors */
+  --color-weapon-bg: linear-gradient(145deg, #2d2a1f, #1a1812);
+  --color-weapon-border: #daa520;
+  --color-weapon-glow: rgba(218, 165, 32, 0.5);
+
+  /* Animation Timing */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+
+  /* Typography */
+  font-family: 'Cinzel', 'Times New Roman', serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Import fantasy fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=MedievalSharp&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  /* Try to load custom background image, fall back to CSS gradient */
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.4)),
+    url('/cards/ui/background.png'),
+    radial-gradient(ellipse at top, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(22, 33, 62, 0.8) 0%, transparent 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 50px,
+      rgba(0, 0, 0, 0.1) 50px,
+      rgba(0, 0, 0, 0.1) 51px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 50px,
+      rgba(0, 0, 0, 0.1) 50px,
+      rgba(0, 0, 0, 0.1) 51px
+    ),
+    var(--color-bg-primary);
+  background-size: auto, cover, auto, auto, auto, auto, auto;
+  background-position: center, center, center, center, center, center, center;
+  background-attachment: fixed;
+}
+
+/* Torchlight flicker animation */
+@keyframes torchFlicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+  75% { opacity: 0.95; }
+}
+
+/* Damage shake animation */
+@keyframes damageShake {
+  0%, 100% { transform: translateX(0); }
+  10% { transform: translateX(-8px) rotate(-1deg); }
+  20% { transform: translateX(8px) rotate(1deg); }
+  30% { transform: translateX(-6px) rotate(-0.5deg); }
+  40% { transform: translateX(6px) rotate(0.5deg); }
+  50% { transform: translateX(-4px); }
+  60% { transform: translateX(4px); }
+  70% { transform: translateX(-2px); }
+  80% { transform: translateX(2px); }
+  90% { transform: translateX(-1px); }
+}
+
+/* Heal glow animation */
+@keyframes healGlow {
+  0% {
+    box-shadow: 0 0 10px var(--color-poison-green), 0 0 20px var(--color-poison-green);
+    filter: brightness(1);
+  }
+  50% {
+    box-shadow: 0 0 30px var(--color-poison-green), 0 0 60px var(--color-poison-green);
+    filter: brightness(1.3);
+  }
+  100% {
+    box-shadow: 0 0 10px var(--color-poison-green), 0 0 20px var(--color-poison-green);
+    filter: brightness(1);
+  }
+}
+
+/* Card flip animation */
+@keyframes cardFlip {
+  0% { transform: perspective(1000px) rotateY(0deg); }
+  50% { transform: perspective(1000px) rotateY(90deg); }
+  100% { transform: perspective(1000px) rotateY(0deg); }
+}
+
+/* Card entrance animation */
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(5px) scale(1.02);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Weapon equip flash */
+@keyframes weaponFlash {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5) saturate(1.5); }
+}
+
+/* Float animation for icons */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Victory celebration */
+@keyframes victory {
+  0% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.1) rotate(-5deg); }
+  50% { transform: scale(1.15) rotate(5deg); }
+  75% { transform: scale(1.1) rotate(-3deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Defeat fade */
+@keyframes defeatFade {
+  0% { filter: grayscale(0) brightness(1); }
+  100% { filter: grayscale(0.5) brightness(0.7); }
+}
+
+/* Particle rise animation */
+@keyframes particleRise {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.5);
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-stone);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--color-torch-orange), var(--color-blood-red));
+  border-radius: 5px;
+  border: 2px solid var(--color-stone);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--color-torch-glow), var(--color-torch-orange));
+}
+
+button {
+  font-family: 'Cinzel', serif;
+}
+
+/* Utility classes for animations */
+.animate-shake {
+  animation: damageShake 0.5s ease-out;
+}
+
+.animate-heal {
+  animation: healGlow 0.8s ease-out;
+}
+
+.animate-flip {
+  animation: cardFlip 0.4s ease-out;
+}
+
+.animate-entrance {
+  animation: cardEntrance 0.4s ease-out forwards;
+}
+
+.animate-victory {
+  animation: victory 0.8s ease-out;
+}
+
+.animate-defeat {
+  animation: defeatFade 1s ease-out forwards;
+}
+
+/* Card exit animation */
+@keyframes cardExit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+  }
+}
+
+/* Floating number animation (for damage/heal indicators) */
+@keyframes floatingNumber {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-20px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50px) scale(0.8);
+  }
+}

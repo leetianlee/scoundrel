@@ -1,0 +1,30 @@
+.floating-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'MedievalSharp', serif;
+  font-size: 36px;
+  font-weight: bold;
+  pointer-events: none;
+  z-index: 100;
+  animation: floatingNumber 1.5s ease-out forwards;
+  text-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.8),
+    0 0 20px currentColor;
+}
+
+.floating-number--heal {
+  color: #2ecc71;
+}
+
+.floating-number--damage {
+  color: #e74c3c;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .floating-number {
+    font-size: 28px;
+  }
+}

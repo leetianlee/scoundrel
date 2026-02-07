@@ -1,0 +1,251 @@
+.player-status {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+  padding: 18px 28px;
+  border-radius: 12px;
+  border: 2px solid var(--color-stone-light);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.player-status__section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-status__label {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--color-text-dim);
+  font-weight: 600;
+}
+
+.player-status__hp {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 160px;
+}
+
+.player-status__hp-bar {
+  position: relative;
+  height: 28px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+  border-radius: 14px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-status__hp-fill {
+  height: 100%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
+  border-radius: 12px;
+  box-shadow:
+    0 0 10px rgba(255, 100, 100, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* HP color states */
+.player-status__hp-fill--high {
+  background: linear-gradient(180deg, #2ecc71, #27ae60);
+  box-shadow:
+    0 0 15px rgba(46, 204, 113, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.player-status__hp-fill--medium {
+  background: linear-gradient(180deg, #f39c12, #e67e22);
+  box-shadow:
+    0 0 15px rgba(243, 156, 18, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.player-status__hp-fill--low {
+  background: linear-gradient(180deg, #e74c3c, #c0392b);
+  box-shadow:
+    0 0 15px rgba(231, 76, 60, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.player-status__hp-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+  letter-spacing: 1px;
+}
+
+.player-status__weapon {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.player-status__weapon-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.player-status__weapon-card {
+  background: linear-gradient(145deg, var(--color-gold), #daa520);
+  color: var(--color-bg-primary);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'MedievalSharp', serif;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow:
+    0 2px 8px rgba(218, 165, 32, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.player-status__weapon-strength {
+  color: var(--color-gold);
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  font-size: 18px;
+  text-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+}
+
+/* Weapon degradation display */
+.player-status__degradation {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.player-status__degrade-label {
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-torch-glow);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-shadow: 0 0 8px rgba(255, 159, 28, 0.4);
+}
+
+.player-status__degrade-bar {
+  position: relative;
+  height: 8px;
+  min-width: 120px;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-status__degrade-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+.player-status__degrade-fill--good {
+  background: linear-gradient(90deg, var(--color-gold), #daa520);
+  box-shadow: 0 0 8px rgba(218, 165, 32, 0.4);
+}
+
+.player-status__degrade-fill--warn {
+  background: linear-gradient(90deg, var(--color-torch-glow), var(--color-torch-orange));
+  box-shadow: 0 0 8px rgba(255, 159, 28, 0.4);
+}
+
+.player-status__degrade-fill--critical {
+  background: linear-gradient(90deg, var(--color-blood-red), #e74c3c);
+  box-shadow: 0 0 8px rgba(196, 30, 58, 0.4);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.player-status__weapon-none {
+  color: var(--color-text-dim);
+  font-style: italic;
+  font-size: 14px;
+}
+
+.player-status__deck-info {
+  display: flex;
+  gap: 20px;
+}
+
+.player-status__deck,
+.player-status__discard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.player-status__count {
+  font-family: 'Cinzel', serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: var(--color-text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.player-status__deck .player-status__count {
+  color: var(--color-pale-blue);
+}
+
+.player-status__discard .player-status__count {
+  color: var(--color-text-dim);
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .player-status {
+    gap: 16px;
+    padding: 14px 18px;
+  }
+
+  .player-status__hp {
+    min-width: 130px;
+  }
+
+  .player-status__hp-bar {
+    height: 22px;
+  }
+
+  .player-status__hp-text {
+    font-size: 12px;
+  }
+
+  .player-status__label {
+    font-size: 10px;
+  }
+
+  .player-status__weapon-card {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .player-status__weapon-strength {
+    font-size: 15px;
+  }
+
+  .player-status__count {
+    font-size: 18px;
+  }
+
+  .player-status__deck-info {
+    gap: 14px;
+  }
+}

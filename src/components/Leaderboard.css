@@ -1,0 +1,207 @@
+.leaderboard {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.leaderboard__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.leaderboard__title {
+  font-family: 'MedievalSharp', 'Cinzel', serif;
+  font-size: 18px;
+  margin: 0;
+  color: var(--color-gold);
+  letter-spacing: 1px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.leaderboard__refresh {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--color-text-secondary);
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--transition-fast) ease;
+}
+
+.leaderboard__refresh:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-primary);
+}
+
+.leaderboard__refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaderboard__error {
+  background: rgba(196, 30, 58, 0.15);
+  border: 1px solid rgba(196, 30, 58, 0.3);
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: var(--color-blood-red);
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.leaderboard__retry {
+  background: rgba(196, 30, 58, 0.2);
+  border: 1px solid rgba(196, 30, 58, 0.3);
+  color: var(--color-blood-red);
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.leaderboard__retry:hover {
+  background: rgba(196, 30, 58, 0.3);
+}
+
+.leaderboard__loading {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboard__skeleton {
+  height: 36px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 25%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  border-radius: 6px;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.leaderboard__empty {
+  text-align: center;
+  color: var(--color-text-dim);
+  font-style: italic;
+  font-size: 14px;
+  padding: 20px;
+}
+
+.leaderboard__list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.leaderboard__entry {
+  display: grid;
+  grid-template-columns: 36px 1fr auto auto auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 13px;
+  transition: all var(--transition-fast) ease;
+}
+
+.leaderboard__entry--top1 {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
+.leaderboard__entry--top2 {
+  background: rgba(192, 192, 192, 0.06);
+  border-color: rgba(192, 192, 192, 0.15);
+}
+
+.leaderboard__entry--top3 {
+  background: rgba(205, 127, 50, 0.06);
+  border-color: rgba(205, 127, 50, 0.15);
+}
+
+.leaderboard__entry--highlight {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+  animation: highlightPulse 2s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.15); }
+  50% { box-shadow: 0 0 16px rgba(255, 215, 0, 0.3); }
+}
+
+.leaderboard__rank {
+  font-weight: bold;
+  color: var(--color-text-dim);
+  text-align: center;
+  font-size: 12px;
+}
+
+.leaderboard__rank--top {
+  font-size: 16px;
+}
+
+.leaderboard__nickname {
+  color: var(--color-text-primary);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leaderboard__score {
+  color: var(--color-gold);
+  font-weight: bold;
+  font-size: 15px;
+  text-align: right;
+  min-width: 24px;
+}
+
+.leaderboard__hp {
+  color: var(--color-poison-green);
+  font-size: 11px;
+  text-align: right;
+  min-width: 36px;
+}
+
+.leaderboard__time {
+  color: var(--color-text-dim);
+  font-size: 11px;
+  text-align: right;
+  min-width: 48px;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .leaderboard__entry {
+    grid-template-columns: 30px 1fr auto auto;
+    gap: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .leaderboard__time {
+    display: none;
+  }
+
+  .leaderboard__list {
+    max-height: 220px;
+  }
+
+  .leaderboard__title {
+    font-size: 15px;
+  }
+}
