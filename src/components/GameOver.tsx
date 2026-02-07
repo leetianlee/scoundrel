@@ -18,6 +18,7 @@ interface GameOverProps {
   // Daily challenge props
   isDailyChallenge?: boolean;
   dailySeed?: string | null;
+  dailyStreak?: number;
   onSubmitDailyScore?: (nickname: string) => Promise<boolean>;
   dailyLeaderboardEntries?: LeaderboardEntry[];
   dailyLeaderboardLoading?: boolean;
@@ -32,7 +33,7 @@ export function GameOver({
   gameState, onRestart,
   onSubmitScore, leaderboardEntries, leaderboardLoading, leaderboardError,
   submitting, submitted, submittedId, onRefreshLeaderboard,
-  isDailyChallenge, dailySeed,
+  isDailyChallenge, dailySeed, dailyStreak,
   onSubmitDailyScore, dailyLeaderboardEntries, dailyLeaderboardLoading,
   dailyLeaderboardError, dailySubmitting, dailySubmitted, dailySubmittedId,
   onRefreshDailyLeaderboard,
@@ -131,6 +132,17 @@ export function GameOver({
             <span className="game-over__stat-value">{highScore}</span>
           </div>
         </div>
+
+        {/* Daily challenge streak info */}
+        {isDailyChallenge && dailyStreak !== undefined && dailyStreak > 0 && (
+          <div className="game-over__streak">
+            <span className="game-over__streak-fire">🔥</span>
+            <span className="game-over__streak-count">{dailyStreak} day streak!</span>
+            <span className="game-over__streak-message">
+              {dailyStreak >= 7 ? 'Legendary!' : dailyStreak >= 3 ? 'Keep it going!' : 'Come back tomorrow!'}
+            </span>
+          </div>
+        )}
 
         {/* Message for losses explaining no submission */}
         {!isWin && (

@@ -172,7 +172,7 @@ export function GameBoard() {
             className="game-board__help-btn game-board__help-btn--daily"
             onClick={handleStartDailyChallenge}
           >
-            Daily
+            {dailyChallenge.streak > 0 ? `🔥${dailyChallenge.streak} Daily` : 'Daily'}
           </button>
           <button
             className="game-board__help-btn"
@@ -196,6 +196,9 @@ export function GameBoard() {
         {state.isDailyChallenge && (
           <div className="game-board__daily-badge">
             ⭐ Daily Challenge: {state.dailySeed}
+            {dailyChallenge.streak > 0 && (
+              <span className="game-board__streak-badge">🔥 {dailyChallenge.streak} day streak</span>
+            )}
           </div>
         )}
 
@@ -306,6 +309,7 @@ export function GameBoard() {
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
           isDailyChallenge={state.isDailyChallenge}
           dailySeed={state.dailySeed}
+          dailyStreak={dailyChallenge.streak}
           onSubmitDailyScore={async (nickname) => {
             if (!state.dailySeed) return false;
             const success = await dailyLeaderboard.submitDailyScore(
