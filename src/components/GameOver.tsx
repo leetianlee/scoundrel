@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import type { GameState, LeaderboardEntry } from '../types';
 import { shareScore } from '../utils/shareUtils';
 import { Leaderboard } from './Leaderboard';
@@ -47,7 +47,6 @@ export function GameOver({
   });
   const [showLeaderboard, setShowLeaderboard] = useState(submitted);
   const [shareStatus, setShareStatus] = useState<string | null>(null);
-  const leaderboardRef = useRef<HTMLDivElement>(null);
   const hasNativeShare = typeof navigator !== 'undefined' && !!navigator.share;
 
   // Auto-show leaderboard after score submission
@@ -57,15 +56,6 @@ export function GameOver({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [submitted]);
-
-  // Auto-scroll to leaderboard when it becomes visible
-  useEffect(() => {
-    if (showLeaderboard && leaderboardRef.current) {
-      requestAnimationFrame(() => {
-        leaderboardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      });
-    }
-  }, [showLeaderboard]);
 
   const handleSubmit = async () => {
     if (!nickname.trim() || submitting || submitted) return;
@@ -193,9 +183,15 @@ export function GameOver({
           </button>
         </div>
 
-        {/* Leaderboard */}
-        {showLeaderboard && (
-          <div ref={leaderboardRef}>
+      </div>
+
+      {/* Leaderboard modal dialog */}
+      {showLeaderboard && (
+        <div className="leaderboard-modal" onClick={() => setShowLeaderboard(false)}>
+          <div className="leaderboard-modal__content" onClick={(e) => e.stopPropagation()}>
+            <button className="leaderboard-modal__close" onClick={() => setShowLeaderboard(false)}>
+              ✕
+            </button>
             <Leaderboard
               entries={leaderboardEntries}
               loading={leaderboardLoading}
@@ -204,8 +200,8 @@ export function GameOver({
               onRefresh={onRefreshLeaderboard}
             />
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
