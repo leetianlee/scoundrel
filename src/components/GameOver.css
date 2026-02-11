@@ -437,8 +437,8 @@
   transform: translateY(-2px);
 }
 
-/* Leaderboard modal inside game-over needs higher z-index */
-.game-over .leaderboard-modal {
+/* Leaderboard modal from game-over screen needs higher z-index than game-over overlay */
+.leaderboard-modal {
   z-index: 1100;
 }
 
