@@ -437,6 +437,11 @@
   transform: translateY(-2px);
 }
 
+/* Leaderboard modal inside game-over needs higher z-index */
+.game-over .leaderboard-modal {
+  z-index: 1100;
+}
+
 /* Mobile responsive */
 @media (max-width: 600px) {
   .game-over__content {
