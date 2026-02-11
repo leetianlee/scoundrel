@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { GameState, LeaderboardEntry } from '../types';
 import { shareScore } from '../utils/shareUtils';
 import { Leaderboard } from './Leaderboard';
@@ -187,8 +188,8 @@ export function GameOver({
         </div>
       </div>
 
-      {/* Leaderboard modal — rendered outside game-over to avoid nested fixed positioning issues */}
-      {showLeaderboard && (
+      {/* Leaderboard modal — portaled to document.body to avoid any CSS containment issues */}
+      {showLeaderboard && createPortal(
         <div className="leaderboard-modal" onClick={() => setShowLeaderboard(false)}>
           <div className="leaderboard-modal__content" onClick={(e) => e.stopPropagation()}>
             <button className="leaderboard-modal__close" onClick={() => setShowLeaderboard(false)}>
@@ -202,7 +203,8 @@ export function GameOver({
               onRefresh={onRefreshLeaderboard}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
