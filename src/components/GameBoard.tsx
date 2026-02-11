@@ -11,6 +11,7 @@ import { Room } from './Room';
 import { GameOver } from './GameOver';
 import { HowToPlay } from './HowToPlay';
 import { FloatingNumber } from './FloatingNumber';
+import { Leaderboard } from './Leaderboard';
 import { canProceedToNextRoom, canAvoidRoom } from '../utils/gameLogic';
 import { ROOM_SIZE } from '../utils/constants';
 import './GameBoard.css';
@@ -22,6 +23,7 @@ export function GameBoard() {
   const { streak, recordPlay } = usePlayStreak();
   const { stats, recordGame } = useStatistics();
   const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [boardClass, setBoardClass] = useState('');
   const prevHpRef = useRef(state.hp);
   const [floatingNumbers, setFloatingNumbers] = useState<{ id: number; value: number }[]>([]);
@@ -176,6 +178,15 @@ export function GameBoard() {
             {soundEnabled ? 'SOUND ON' : 'SOUND OFF'}
           </button>
           <button
+            className="game-board__help-btn game-board__leaderboard-btn"
+            onClick={() => {
+              setShowLeaderboard(true);
+              leaderboard.fetchLeaderboard();
+            }}
+          >
+            Leaderboard
+          </button>
+          <button
             className="game-board__help-btn"
             onClick={() => setShowHowToPlay(true)}
           >
@@ -294,6 +305,24 @@ export function GameBoard() {
           onRefreshLeaderboard={leaderboard.fetchLeaderboard}
           streak={streak}
         />
+      )}
+
+      {showLeaderboard && (
+        <div className="leaderboard-modal" onClick={() => setShowLeaderboard(false)}>
+          <div className="leaderboard-modal__content" onClick={(e) => e.stopPropagation()}>
+            <button className="leaderboard-modal__close" onClick={() => setShowLeaderboard(false)}>
+              ✕
+            </button>
+            <Leaderboard
+              entries={leaderboard.entries}
+              loading={leaderboard.loading}
+              error={leaderboard.error}
+              highlightId={leaderboard.submittedId}
+              onRefresh={leaderboard.fetchLeaderboard}
+              title="Global Leaderboard"
+            />
+          </div>
+        </div>
       )}
 
       <HowToPlay isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />

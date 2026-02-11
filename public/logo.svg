@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0d0d14"/>
+    </linearGradient>
+    <linearGradient id="torch" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff9f1c"/>
+      <stop offset="100%" style="stop-color:#ff6b35"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e8e8e8"/>
+      <stop offset="100%" style="stop-color:#a0a0a0"/>
+    </linearGradient>
+    <linearGradient id="cardFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d2d3a"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="35%" r="50%">
+      <stop offset="0%" style="stop-color:rgba(255,159,28,0.3)"/>
+      <stop offset="100%" style="stop-color:rgba(255,107,53,0)"/>
+    </radialGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="96" fill="url(#bg)"/>
+
+  <!-- Ambient glow -->
+  <ellipse cx="256" cy="180" rx="200" ry="160" fill="url(#glow)"/>
+
+  <!-- Card shape (background element) -->
+  <rect x="136" y="100" width="240" height="340" rx="20" fill="url(#cardFace)" stroke="#4a4a5a" stroke-width="3" filter="url(#shadow)"/>
+
+  <!-- Card inner border -->
+  <rect x="150" y="114" width="212" height="312" rx="14" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1.5"/>
+
+  <!-- Spade symbol (top-left corner) -->
+  <g transform="translate(166, 138) scale(0.55)">
+    <path d="M30 0C30 0 0 30 0 52c0 16 12 28 26 28c6 0 11-3 14-7c0 8-6 18-14 24h8c0 0 0 0 0 0h12c0 0 0 0 0 0h8c-8-6-14-16-14-24c3 4 8 7 14 7c14 0 26-12 26-28C60 30 30 0 30 0z" fill="#c41e3a"/>
+  </g>
+
+  <!-- Sword (main centerpiece) -->
+  <g transform="translate(256, 260)" filter="url(#shadow)">
+    <!-- Blade -->
+    <rect x="-8" y="-130" width="16" height="160" rx="3" fill="url(#blade)"/>
+    <!-- Blade edge highlight -->
+    <rect x="-4" y="-126" width="3" height="152" rx="1" fill="rgba(255,255,255,0.4)"/>
+    <!-- Blade tip -->
+    <polygon points="-8,-130 8,-130 0,-155" fill="url(#blade)"/>
+    <!-- Cross-guard -->
+    <rect x="-40" y="30" width="80" height="14" rx="4" fill="url(#torch)"/>
+    <rect x="-36" y="33" width="72" height="2" rx="1" fill="rgba(255,255,255,0.3)"/>
+    <!-- Grip -->
+    <rect x="-7" y="44" width="14" height="50" rx="3" fill="#5a3a20"/>
+    <!-- Grip wrapping -->
+    <line x1="-7" y1="54" x2="7" y2="54" stroke="#7a5a30" stroke-width="2"/>
+    <line x1="-7" y1="64" x2="7" y2="64" stroke="#7a5a30" stroke-width="2"/>
+    <line x1="-7" y1="74" x2="7" y2="74" stroke="#7a5a30" stroke-width="2"/>
+    <line x1="-7" y1="84" x2="7" y2="84" stroke="#7a5a30" stroke-width="2"/>
+    <!-- Pommel -->
+    <circle cx="0" cy="98" r="10" fill="url(#torch)"/>
+    <circle cx="0" cy="98" r="5" fill="#c41e3a"/>
+  </g>
+
+  <!-- Heart suit (left of sword) -->
+  <g transform="translate(186, 220) scale(0.6)">
+    <path d="M30 55C30 55 0 30 0 15C0 5 8 0 15 0C22 0 30 8 30 15C30 8 38 0 45 0C52 0 60 5 60 15C60 30 30 55 30 55z" fill="#c41e3a" opacity="0.8"/>
+  </g>
+
+  <!-- Diamond suit (right of sword) -->
+  <g transform="translate(310, 222) scale(0.55)">
+    <polygon points="25,0 50,30 25,60 0,30" fill="#ffd700" opacity="0.8"/>
+  </g>
+
+  <!-- "S" letter at top -->
+  <text x="256" y="85" text-anchor="middle" font-family="serif" font-weight="bold" font-size="48" fill="url(#torch)" style="text-shadow: 0 0 10px rgba(255,107,53,0.5)">S</text>
+
+  <!-- Card corner rank (bottom-right) -->
+  <g transform="translate(335, 395) scale(0.55)">
+    <path d="M30 0C30 0 0 30 0 52c0 16 12 28 26 28c6 0 11-3 14-7c0 8-6 18-14 24h8c0 0 0 0 0 0h12c0 0 0 0 0 0h8c-8-6-14-16-14-24c3 4 8 7 14 7c14 0 26-12 26-28C60 30 30 0 30 0z" fill="#c41e3a" transform="rotate(180, 30, 48)"/>
+  </g>
+</svg>
