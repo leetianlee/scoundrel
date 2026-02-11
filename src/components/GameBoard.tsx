@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import type { Card } from '../types';
 import { useGameState } from '../hooks/useGameState';
 import { useSoundContext } from '../hooks/useSound';
@@ -307,8 +308,8 @@ export function GameBoard() {
         />
       )}
 
-      {showLeaderboard && (
-        <div className="leaderboard-modal" onClick={() => setShowLeaderboard(false)}>
+      {showLeaderboard && createPortal(
+        <div className="leaderboard-modal" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1100, background: 'rgba(0,0,0,0.9)', padding: 20 }} onClick={() => setShowLeaderboard(false)}>
           <div className="leaderboard-modal__content" onClick={(e) => e.stopPropagation()}>
             <button className="leaderboard-modal__close" onClick={() => setShowLeaderboard(false)}>
               ✕
@@ -322,7 +323,8 @@ export function GameBoard() {
               title="Global Leaderboard"
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <HowToPlay isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
